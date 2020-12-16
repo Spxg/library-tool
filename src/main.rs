@@ -14,6 +14,7 @@ use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
 use crate::opt::Command;
+use crate::opt::InOrOut;
 use crate::message::Msg;
 use crate::param::{
     LoginParam,
@@ -53,7 +54,7 @@ fn main() {
             }
         }
         Command::Library {
-            into, out
+            op
         } => {
             if param_loc.exists() {
                 let mut buf = [0; 512];
@@ -61,8 +62,7 @@ fn main() {
 
                 let len = param.read(&mut buf).unwrap();
                 let param: HashMap<String, String> = serde_json::from_slice(&buf[0..len]).unwrap();
-                let param = LoginParam::new(&param["username"]
-                                            , &param["password"]);
+                let param = LoginParam::new(&param["username"], &param["password"]);
                 if account::login(&param) {
                     status = true;
                     println!("[success] account login");
@@ -74,12 +74,17 @@ fn main() {
             }
 
             let do_it = || -> Msg {
-                let msg = if out {
-                    library::out()
-                } else if into == 1 {
-                    library::in_by_api1()
-                } else {
-                    library::in_by_api2()
+                let msg = match op {
+                    InOrOut::In { api } => {
+                        if api == 1 {
+                            library::in_by_api1()
+                        } else if api == 2 {
+                            library::in_by_api2()
+                        } else {
+                            Msg::unknown_api()
+                        }
+                    },
+                    InOrOut::Out => library::out()
                 };
 
                 if msg.is_success() {

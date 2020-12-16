@@ -21,7 +21,8 @@ pub enum MsgType {
     TooFast = 10,
     NotInButOut = 11,
     OverTimeOut = 12,
-    Other = 13,
+    UnknownApi = 13,
+    Other = 14,
 }
 
 impl Msg {
@@ -51,6 +52,13 @@ impl Msg {
 
     pub fn is_invalid_code(&self) -> bool {
         MsgType::InvalidQRCode == self.msg_type
+    }
+
+    pub fn unknown_api() -> Self {
+        Self {
+            success: false,
+            msg_type: MsgType::UnknownApi
+        }
     }
 }
 
