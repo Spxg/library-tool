@@ -1,6 +1,6 @@
 [package]
 name = "library-tool"
-version = "0.1.0"
+version = "0.1.5"
 authors = ["Spxg <itsme@unsafe.me>"]
 edition = "2018"
 
